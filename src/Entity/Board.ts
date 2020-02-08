@@ -52,8 +52,6 @@ export default class Board {
     boxWidth: number;
     boxHeight: number;
 
-    lost = false;
-
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -73,6 +71,20 @@ export default class Board {
 
     hasPoint(p: Point) {
         return p.x >= 0 && p.y >= 0 && p.x < this.size[0] && p.y < this.size[1];
+    }
+
+    find(search: (p: Point) => boolean): Point | null {
+
+        for (let x = 0; x < this.size[0]; x++) {
+            for (let y = 0; y < this.size[1]; y++) {
+
+                if (search(p(x, y))) return p(x, y);
+
+            }
+        }
+
+        return null;
+
     }
 
     addFood(food: number) {
