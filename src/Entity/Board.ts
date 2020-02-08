@@ -1,3 +1,5 @@
+import { Direction } from "./Snake"
+
 export enum BoardItem {
     EMPTY,
     SNAKE,
@@ -9,8 +11,33 @@ export interface Point {
     y: number;
 }
 
+/**
+ * Creates a point structure
+ * @param x 
+ * @param y 
+ */
 export function p(x: number, y: number): Point {
     return { x, y };
+}
+
+
+export function movePoint(point: Point, direction: Direction): Point {
+
+    switch (direction) {
+
+        case Direction.NONE:
+            return point;
+        case Direction.NORTH:
+            return p(point.x, point.y - 1);
+        case Direction.SOUTH:
+            return p(point.x, point.y + 1);
+        case Direction.EAST:
+            return p(point.x - 1, point.y);
+        case Direction.WEST:
+            return p(point.x + 1, point.y);
+
+    }
+
 }
 
 export default class Board {
@@ -25,9 +52,11 @@ export default class Board {
     boxWidth: number;
     boxHeight: number;
 
+    lost = false;
+
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-        this.context = canvas.getContext("2d");
+        this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
 
         this.boxWidth = this.canvas.width / this.size[0];
         this.boxHeight = this.canvas.width / this.size[0];
@@ -40,6 +69,31 @@ export default class Board {
 
     get(p: Point) {
         return this.contents[p.x][p.y];
+    }
+
+    hasPoint(p: Point) {
+        return p.x >= 0 && p.y >= 0 && p.x < this.size[0] && p.y < this.size[1];
+    }
+
+    addFood(food: number) {
+
+        for (let i = 0; i < food; i++) {
+
+            let position = p(
+                Math.round(Math.random() * this.size[0]),
+                Math.round(Math.random() * this.size[1])
+            );
+
+            // Reroll if we've landed on snake
+            if (this.get(position) == BoardItem.SNAKE) {
+                i--;
+                continue;
+            }
+
+            this.set(position, BoardItem.FOOD);
+
+        };
+
     }
 
     render = () => {
