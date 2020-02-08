@@ -23,6 +23,9 @@ class Node implements Point {
     parent: Node;
     end: Point;
 
+    // Whether or not this is the original node
+    base = false;
+
     /**
      * Returns the square distance from this node to another
      * @param p Point (or Node)
@@ -43,6 +46,8 @@ class Node implements Point {
         this.cost = this.ground + this.heuristic;
         this.parent = parentNode;
         this.end = end;
+
+        this.base = !parentNode;
 
     }
 
@@ -129,14 +134,12 @@ export default function AStarHamiltonianControl(snake: Snake) {
         let directions = [];
         let node: Node = endNode;
 
-        // Follow up through the parent nodes
-        while (node) {
-            directions.push(node.represents);
-            node = endNode.parent;
+        while (!node.base) {
+            directions.unshift(node.represents);
+            node = node.parent;
         }
 
-        // Since we went backwards, directions is reversed
-        return directions.reverse();
+        return directions;
 
 
     };
@@ -147,7 +150,7 @@ export default function AStarHamiltonianControl(snake: Snake) {
     })
 
     // Start by generateing the path
-    // PATH = generateAStarPath();
+    PATH = generateAStarPath();
 
     // Follow the path each iteration
     return () => {
