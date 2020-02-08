@@ -113,13 +113,35 @@ export default class Board {
 
     }
 
+    marked: Point[] = [];
+
+    mark(point: Point) {
+        this.marked.push(point);
+    }
+
+    unmark(point: Point) {
+        this.marked = this.marked.filter(p => p.x != point.x || p.y != point.y);
+    }
+
+    isMarked(point: Point) {
+        return this.marked.some(p => p.x == point.x && p.y == point.y);
+    }
+
     render = () => {
 
         // Iterate through each item
         this.contents.forEach((col, x) => col.forEach((item, y) => {
 
+            this.context.globalAlpha = 1;
             this.context.fillStyle = this.colors[item]
             this.context.fillRect(x * this.boxWidth, y * this.boxHeight, this.boxWidth, this.boxHeight);
+
+            // Show the marked points
+            if (this.isMarked(p(x, y))) {
+                this.context.fillStyle = "#6c5ce7"
+                this.context.globalAlpha = 0.5;
+                this.context.fillRect(x * this.boxWidth, y * this.boxHeight, this.boxWidth, this.boxHeight);
+            }
 
 
         }));
