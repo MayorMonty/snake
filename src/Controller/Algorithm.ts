@@ -69,10 +69,10 @@ export default function AStarHamiltonianControl(snake: Snake) {
 
     let PATH = [];
 
-    function generateAStarPath(): Direction[] {
+    function generateAStarPath(food?: Point): Direction[] {
 
         // Get the current position of the food, the target
-        const target = snake.board.find(p => snake.board.get(p) == BoardItem.FOOD);
+        const target: Point = food || snake.board.find(p => snake.board.get(p) == BoardItem.FOOD);
 
         // Add the starting square to the open list
         let openList = [
@@ -145,8 +145,8 @@ export default function AStarHamiltonianControl(snake: Snake) {
     };
 
     // Regenerate the path whenever we grow
-    snake.on("grow", () => {
-        PATH = generateAStarPath();
+    snake.on("grow", (foods) => {
+        PATH = generateAStarPath(foods[0]);
     })
 
     // Start by generateing the path

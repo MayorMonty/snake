@@ -84,9 +84,9 @@ export default class Snake extends EventEmitter {
             );
 
             // Add a new food to the board
-            this.board.addFood(1);
+            let foods = this.board.addFood(1);
 
-            this.emit("grow");
+            this.emit("grow", foods);
 
         };
 
