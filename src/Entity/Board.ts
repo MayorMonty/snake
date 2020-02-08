@@ -89,6 +89,8 @@ export default class Board {
 
     addFood(food: number) {
 
+        let pos: Point[] = [];
+
         for (let i = 0; i < food; i++) {
 
             let position = p(
@@ -103,8 +105,11 @@ export default class Board {
             }
 
             this.set(position, BoardItem.FOOD);
+            pos.push(position);
 
         };
+
+        return pos;
 
     }
 
