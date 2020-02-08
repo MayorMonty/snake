@@ -52,6 +52,10 @@ export default class Snake extends EventEmitter {
         this.body.forEach(point => this.board.set(point, BoardItem.SNAKE));
     }
 
+    head(): Point {
+        return this.body[0];
+    }
+
 
     move(direction: Direction) {
 
@@ -63,11 +67,11 @@ export default class Snake extends EventEmitter {
         this.lastDirection = direction;
 
         // Create the new head by creating a new point based on the old one
-        const head = movePoint(this.body[0], direction);
+        const head = movePoint(this.head(), direction);
 
         // Moving into a wall is losing
         if (!this.board.hasPoint(head)) {
-            this.board.lost = true;
+            this.emit("lost");
             return null;
         }
 
@@ -82,11 +86,13 @@ export default class Snake extends EventEmitter {
             // Add a new food to the board
             this.board.addFood(1);
 
+            this.emit("grow");
+
         };
 
         // Running into ourself is losing
         if (this.board.get(head) == BoardItem.SNAKE) {
-            this.board.lost = true;
+            this.emit("lost");
             return null;
         }
 
