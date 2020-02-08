@@ -71,6 +71,8 @@ export default function AStarHamiltonianControl(snake: Snake) {
 
     function generateAStarPath(food?: Point): Direction[] {
 
+        snake.board.marked = [];
+
         // Get the current position of the food, the target
         const target: Point = food || snake.board.find(p => snake.board.get(p) == BoardItem.FOOD);
 
@@ -136,6 +138,7 @@ export default function AStarHamiltonianControl(snake: Snake) {
 
         while (!node.base) {
             directions.unshift(node.represents);
+            // snake.board.mark(node);
             node = node.parent;
         }
 
@@ -154,7 +157,7 @@ export default function AStarHamiltonianControl(snake: Snake) {
 
     // Follow the path each iteration
     return () => {
-        return PATH.shift() || Direction.NONE;
+        return PATH.shift();
     }
 
 }
