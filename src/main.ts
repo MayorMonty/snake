@@ -1,6 +1,7 @@
 import Board, { p, BoardItem } from "./Entity/Board";
 import Snake, { Direction } from "./Entity/Snake";
 import keyboard from "./Controller/Keyboard";
+import algorithmic from "./Controller/Algorithm";
 
 const canvas = document.querySelector("canvas#snake") as HTMLCanvasElement;
 const board = new Board(canvas);
@@ -18,10 +19,11 @@ board.set(p(30, 30), BoardItem.FOOD)
 // Start the render
 board.render();
 
+const controller = algorithmic(snake);
+
 let input = setInterval(() => {
-    const direction = keyboard(snake);
+    const direction = controller();
     snake.move(direction);
-
-    if (board.lost) clearInterval(input);
-
 }, 50);
+
+snake.on("lose", () => clearInterval(input));
