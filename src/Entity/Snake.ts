@@ -75,6 +75,19 @@ export default class Snake extends EventEmitter {
             return null;
         }
 
+
+        // Running into ourself is losing
+        if (this.board.get(head) == BoardItem.SNAKE) {
+            this.emit("lost");
+            return null;
+        }
+
+
+
+        // Take off the end of the snake, and add to the beginning to move (that way moving is O(1) instead of O(n))
+        const tail = this.body.pop() as Point;
+        this.body.unshift(head);
+
         // We've eaten food! 
         if (this.board.get(head) == BoardItem.FOOD) {
 
@@ -88,22 +101,14 @@ export default class Snake extends EventEmitter {
 
             this.emit("grow", foods);
 
+
         };
-
-        // Running into ourself is losing
-        if (this.board.get(head) == BoardItem.SNAKE) {
-            this.emit("lost");
-            return null;
-        }
-
-        // Take off the end of the snake, and add to the beginning to move (that way moving is O(1) instead of O(n))
-        const tail = this.body.pop() as Point;
-        this.body.unshift(head);
 
         // Update board data
         this.board
             .set(head, BoardItem.SNAKE)
             .set(tail, BoardItem.EMPTY);
+
 
     }
 
