@@ -2,8 +2,6 @@
  * Keyboard Controller
  */
 
-
-
 import Snake, { Direction, oppositeDirection } from "../Entity/Snake";
 
 let direction = Direction.NONE;
