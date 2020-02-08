@@ -8,7 +8,7 @@ const board = new Board(canvas);
 
 const snake = new Snake({
     board,
-    head: p(10, 5),
+    head: p(5, 5),
     facing: Direction.NONE,
     size: 1
 });
@@ -24,6 +24,6 @@ const controller = algorithmic(snake);
 let input = setInterval(() => {
     const direction = controller();
     snake.move(direction);
-}, 50);
+}, 5);
 
 snake.on("lose", () => clearInterval(input));
