@@ -65,99 +65,193 @@ class Node implements Point {
 }
 
 
-export default function AStarHamiltonianControl(snake: Snake) {
+export class PriorityQueue<T> implements Iterable<T> {
 
-    let PATH = [];
+    heap: [T, number][] = [];
+    comparator: (a: T, b: T) => boolean = (a, b) => a === b;
 
-    function generateAStarPath(food?: Point): Direction[] {
-
-        snake.board.marked = [];
-
-        // Get the current position of the food, the target
-        const target: Point = food || snake.board.find(p => snake.board.get(p) == BoardItem.FOOD);
-
-        // Add the starting square to the open list
-        let openList = [
-            new Node(snake.head(), target, Direction.NONE)
-        ];
-
-        // Closed list
-        let closedList = [];
-
-        let endNode: Node;
-
-        // Search for the path
-        while (openList.length > 0 && !endNode) {
-
-            // Sort openList by lowest total cost
-            openList = openList.sort((a, b) => a.cost - b.cost);
-
-            // Remove the lowest cost as the current, and add to closed list
-            let current = openList.shift();
-            closedList.push(current);
-
-            // For each of the directions
-            for (let i = 0; i < 4; i++) {
-                let direction: Direction = i;
-
-                // Get the point at this place, if it's snake or the wall, we can't go there
-                let point = movePoint(current, direction);
-                if (!snake.board.hasPoint(point) || snake.board.get(point) == BoardItem.SNAKE) continue;
-
-                // Create a node for the possible path
-                let node = new Node(point, target, direction, current);
-
-                // If we've reached the target, break!
-                if (node.is(target)) {
-                    endNode = node;
-                    break;
-                }
-
-                // If it's not on the open list, add it
-                let same = openList.find(n => n.is(node));
-
-                if (!same) {
-                    openList.push(node);
-
-                    // Else compare the G cost of the two nodes, if it's better, use current as the parent (marking the shorter path)
-                } else if (node.ground < same.ground) {
-                    same.setParent(current);
-                }
-
-            }
+    constructor(comparator?: (a: T, b: T) => boolean) {
+        if (comparator) {
+            this.comparator = comparator;
         }
-
-        // If we couldn't find a path, just stay still for now
-        if (!endNode) {
-            return [];
-        }
-
-        // Else create a list of directions to the food
-        let directions = [];
-        let node: Node = endNode;
-
-        while (!node.base) {
-            directions.unshift(node.represents);
-            // snake.board.mark(node);
-            node = node.parent;
-        }
-
-        return directions;
-
-
-    };
-
-    // Regenerate the path whenever we grow
-    snake.on("grow", (foods) => {
-        PATH = generateAStarPath(foods[0]);
-    })
-
-    // Start by generateing the path
-    PATH = generateAStarPath();
-
-    // Follow the path each iteration
-    return () => {
-        return PATH.shift();
     }
 
+    /**
+     * Inserts the value at the specified priority
+     * @param value 
+     * @param priority 
+     */
+    insert(value: T, priority: number) {
+        let inserted = false;
+        for (let i = 0; i < this.heap.length; i++) {
+            const compare = this.heap[i];
+
+            if (compare[1] < priority) {
+                this.heap.splice(i, 0, [value, priority]);
+                inserted = true;
+            }
+
+        }
+
+        if (!inserted) {
+            this.heap.push([value, priority])
+        }
+    }
+
+    /**
+     * Use the comparator argument (defaults to triple equals) to see if the queue has an item
+     * @param value Value to compare
+     */
+    has(value: T) {
+        return this.heap.some(item => this.comparator(item[0], value));
+    }
+
+    /**
+     * Gets the size of the queue
+     */
+    size() {
+        return this.heap.length;
+    }
+
+    // Access Methods
+
+    /**
+     * Gets the highest priority item without removing
+     */
+    peek() {
+        return this.heap[0][0];
+    }
+
+    /**
+     * Gets the lowest priority item without removing
+     */
+    peekEnd() {
+        this.heap[this.heap.length - 1][0];
+    }
+
+    /**
+     * Gets the lowest priority item
+     */
+    getEnd() {
+        return this.heap.pop()[0];
+    }
+
+    /**
+     * Gets the highest priority item
+     */
+    get() {
+        return this.heap.shift()[0];
+    }
+
+
+    // Iteration methods
+
+    /**
+     * Returns an array of each of the values
+     */
+    values() {
+        return this.heap.map(([val]) => val);
+    }
+
+    /**
+     * Returns an array of the priorities
+     */
+    priorities() {
+        return this.heap.map(([, p]) => p);
+    }
+
+    /**
+     * Returns an entries array like [value, priority]
+     */
+    entries() {
+        return this.heap;
+    }
+
+    /**
+     * Iterates through the object, returns [value, priority]
+     */
+    private step = 0;
+    public [Symbol.iterator]() {
+        return {
+            next: function () {
+                return {
+                    done: this.step === this.heap.length,
+                    value: this.heap[this.step]
+                }
+            }.bind(this)
+        }
+    }
+
+}
+
+
+
+function pathfind(board: Board, start: Point, end: Point) {
+
+
+    const frontier = new PriorityQueue<Node>((a, b) => a.is(b));
+    const origin = new Node(start, end, Direction.NONE);
+
+    frontier.insert(origin, origin.cost);
+
+    while (frontier.size() > 0) {
+        const current = frontier.getEnd();
+
+        // If we've reached the end, reconstruct the path
+        if (current.is(end)) {
+            let directions: Direction[] = [];
+            let node = current;
+
+            while (!node.base) {
+                directions.unshift(node.represents);
+                node = node.parent;
+            }
+
+            return directions;
+        }
+
+        // For each of the directions
+        for (let direction = 0; direction < 4; direction++) {
+
+            // Create new node and add it to frontier
+            const point = movePoint(current, direction);
+            if (board.hasPoint(point) && board.get(point) !== BoardItem.SNAKE) {
+                const node = new Node(point, end, direction, current);
+
+                if (frontier.has(node)) {
+
+                } else {
+                    frontier.insert(node, node.cost);
+                }
+
+
+            }
+
+
+        }
+
+    }
+
+    return [];
+
+}
+
+export default (snake: Snake) => {
+
+    const board = snake.board;
+    const start = snake.head();
+    const end = board.find(p => board.get(p) === BoardItem.FOOD);
+
+    // let path = pathfind(board, start, end);
+    let path = [];
+
+    return () => {
+        const direction = path.shift();
+        if (typeof direction === "undefined") {
+            return Direction.NONE;
+        }
+
+        console.log(direction);
+        return direction;
+    }
 }
