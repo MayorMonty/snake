@@ -146,7 +146,6 @@ export default class Board {
 
         }));
 
-        requestAnimationFrame(this.render);
 
     }
 

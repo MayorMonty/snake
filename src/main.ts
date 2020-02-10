@@ -16,14 +16,24 @@ const snake = new Snake({
 // Create Food
 board.set(p(30, 30), BoardItem.FOOD)
 
-// Start the render
-board.render();
 
-const controller = algorithmic(snake);
+let lost = false;
+const controller = algorithmic();
 
-let input = setInterval(() => {
-    const direction = controller();
+
+function step() {
+
+
+
+    const direction = keyboard(snake);
     snake.move(direction);
-}, 5);
 
-snake.on("lose", () => clearInterval(input));
+    board.render()
+
+    if (!lost)
+        requestAnimationFrame(step);
+}
+
+step();
+
+snake.on("lost", () => lost = true);
