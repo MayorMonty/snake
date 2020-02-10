@@ -92,11 +92,9 @@ export default class Snake extends EventEmitter {
         if (this.board.get(head) == BoardItem.FOOD) {
 
             // Add on to the end of the snake
-            for (let i = 0; i < 1; i++) {
-                this.body.push(
-                    movePoint(this.body[this.body.length - 1], oppositeDirection(this.lastDirection))
-                );
-            }
+            this.body.push(
+                movePoint(this.body[this.body.length - 1], oppositeDirection(this.lastDirection))
+            );
 
             // Add a new food to the board
             let foods = this.board.addFood(1);
