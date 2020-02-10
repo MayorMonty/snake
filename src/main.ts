@@ -14,18 +14,16 @@ const snake = new Snake({
 });
 
 // Create Food
-board.set(p(30, 30), BoardItem.FOOD)
+board.addFood(1);
 
 
 let lost = false;
-const controller = algorithmic();
+const controller = algorithmic(snake);
 
 
 function step() {
 
-
-
-    const direction = keyboard(snake);
+    const direction = controller();
     snake.move(direction);
 
     board.render()
