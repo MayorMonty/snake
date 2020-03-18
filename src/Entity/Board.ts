@@ -42,9 +42,9 @@ export function movePoint(point: Point, direction: Direction): Point {
 
 export default class Board {
 
-    size = [100, 50]
+    size: [number, number] = [100, 50]
     contents: BoardItem[][] = [...Array(this.size[0])].map(() => [...Array(this.size[1])].map(() => BoardItem.EMPTY));
-    colors = ["#2d3436", "#55efc4", "#ff7675"]
+    colors = ["#2d3436", "#55efc4", "#e17055"]
 
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
