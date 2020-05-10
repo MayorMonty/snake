@@ -5,7 +5,13 @@
   "main": "index.html",
   "author": "Brendan McGuire",
   "license": "MIT",
+  "scripts": {
+    "dev": "parcel index.html"
+  },
   "devDependencies": {
     "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@types/node": "^13.13.5"
   }
 }

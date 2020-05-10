@@ -1,38 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Snake</title>
     <style>
-        body,
-        html {
-            background: #2d3436;
-            height: 100%;
-            margin: 0;
+      body,
+      html {
+        background: #2d3436;
+        height: 100%;
+        margin: 0;
 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        }
+      canvas {
+        width: 100%;
+        height: auto;
+        object-fit: scale-down;
+        box-sizing: border-box;
 
-        canvas {
-            height: 100%;
-            width: auto;
-            object-fit: scale-down;
-            box-sizing: border-box;
-
-            border: 1px dotted #636e72
-        }
+        border: 1px dotted #636e72;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <canvas id="snake" width="1600" height="800"></canvas>
-</body>
+  </body>
 
-<script src="src/main.ts"></script>
-
+  <script src="src/main.ts"></script>
 </html>

@@ -10,24 +10,42 @@ const snake = new Snake({
   board,
   head: p(5, 5),
   facing: Direction.NONE,
-  size: 1
+  size: 1,
 });
 
 // Create Food
 board.addFood(1);
 
 let lost = false;
-const controller = algorithmic(snake);
 
-function step() {
+function render() {
   board.render();
 
-  const direction = controller();
-  snake.move(direction);
-
-  if (!lost) requestAnimationFrame(step);
+  if (!lost) requestAnimationFrame(render);
 }
 
-step();
+function loop() {
+  const direction = keyboard(snake);
+  snake.move(direction);
+}
+
+const controller = algorithmic(snake);
+
+let loopTimer: NodeJS.Timeout | null = setInterval(loop, 50);
+
+window.addEventListener("keydown", (e) => {
+  e.preventDefault();
+
+  if (e.key !== " ") return;
+
+  if (loopTimer) {
+    clearInterval(loopTimer);
+    loopTimer = null;
+  } else {
+    loopTimer = setInterval(loop, 50);
+  }
+});
+
+render();
 
 snake.on("lost", () => (lost = true));

@@ -6,7 +6,7 @@ export default (snake: Snake) => {
 
   return () => {
     while (!food) {
-      food = snake.board.find(p => snake.board.get(p) === BoardItem.FOOD);
+      food = snake.board.find((p) => snake.board.get(p) === BoardItem.FOOD);
     }
 
     if (snake.head().y < food.y) {
